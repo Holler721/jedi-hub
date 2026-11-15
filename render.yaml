@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: jedi-hub
+    runtime: node
+    plan: free
+    buildCommand: echo "kein Build nötig"
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: HUB_SSO_SECRET
+        sync: false
+      - key: SCHATTEN_URL
+        sync: false
+      - key: ARCHIV_URL
+        sync: false
+      - key: HUETER_URL
+        sync: false
+      - key: TEMPELWACHE_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
