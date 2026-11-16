@@ -176,7 +176,7 @@ function renderTiles(){
     var b=el('button',{'class':'pri',text:'Betreten'});
     if(!on){b.disabled=true;b.textContent='Kein Zugang';}
     else if(!s.ready){b.disabled=true;b.textContent='Noch nicht verbunden';}
-    else b.addEventListener('click',function(){b.disabled=true;api('POST','/api/launch',{target:s.key}).then(function(j){location.href=j.url;}).catch(function(e){b.disabled=false;toast(e.message)});});
+    else b.addEventListener('click',function(){b.disabled=true;setTimeout(function(){b.disabled=false},4000);api('POST','/api/launch',{target:s.key}).then(function(j){location.href=j.url;}).catch(function(e){b.disabled=false;toast(e.message)});});
     t.appendChild(el('div',{'class':'tile'+(on?'':' off')},[el('div',{'class':'role',text:s.role}),el('h3',{text:s.label}),el('p',{text:desc[s.key]||''}),b]));
   });
   $('noAccess').hidden=any;
@@ -223,6 +223,7 @@ $('tabs').addEventListener('click',function(e){var b=e.target.closest('button[da
   document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x===b)});
   document.querySelectorAll('[data-p]').forEach(function(p){p.hidden=p.getAttribute('data-p')!==b.getAttribute('data-t')});
   if(b.dataset.t==='users')loadUsers();if(b.dataset.t==='logs')loadLogs();});
+window.addEventListener('pageshow',function(e){if(e.persisted)load();}); // Zurück-Taste: Seite frisch aufbauen, Buttons wieder aktiv
 load();
 })();
 </script>
