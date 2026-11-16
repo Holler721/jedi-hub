@@ -42,6 +42,7 @@ Der Hub führt: Ein Konto hat überall denselben Namen und dasselbe Passwort. An
 - Eine Sperre, die die Seite selbst gesetzt hat, bleibt auch nach erneutem Hub-Zugang bestehen.
 
 ## Konten-Rechte im Hub
+- **Mace Windu (Jedi Ratsvorsitz):** Unantastbares Konto wie auf den Seiten, fest im Code. Alle Rechte im Hub (Konten anlegen, Zugänge vergeben, Verwalter ernennen), Zugang zu allen Bereichen. Es kann von niemandem geändert, gesperrt, zurückgesetzt oder gelöscht werden. Es hat dieselben Zugangsdaten wie auf den Seiten (Einmal-Passwort, bei der ersten Anmeldung zu ändern). Mit `UNTOUCHABLE_PASSWORD_MACE_WINDU` lässt sich ein festes Passwort setzen.
 - Haupt-Owner: alles, ernennt Hub-Verwalter.
 - Hub-Verwalter: legt Konten an, vergibt Zugänge, sperrt, setzt Passwörter zurück, löscht.
 - Neue Konten bekommen ein Startpasswort (einmal sichtbar) und wählen beim ersten Login ein eigenes.

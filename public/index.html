@@ -157,7 +157,7 @@ function show(){
   var u=S.user;
   $('vLogin').hidden=!!u;$('vApp').hidden=!u;
   if(!u)return;
-  $('who').textContent=u.display+(u.owner?' · Haupt-Owner':u.admin?' · Hub-Verwalter':'');
+  $('who').textContent=u.display+(u.group?' · '+u.group:u.owner?' · Haupt-Owner':u.admin?' · Hub-Verwalter':'');
   var force=!!u.mustChange;
   $('vForce').hidden=!force;$('vMain').hidden=force;
   if(force){pwForm($('pwForceHost'),function(){load();});return;}
@@ -189,7 +189,7 @@ function loadUsers(){
     j.users.forEach(function(u){
       var locked=u.owner||(u.admin&&!S.user.owner);
       function cb(k){var c=el('input',{type:'checkbox','aria-label':k+' für '+u.display});c.checked=!!u.access[k];c.disabled=locked;c.addEventListener('change',function(){var a={};S.sites.forEach(function(x){a[x.key]=!!u.access[x.key]});a[k]=c.checked;api('PUT','/api/users/'+encodeURIComponent(u.name),{access:a}).then(function(r){u.access=r.user.access;toast('Gespeichert')}).catch(function(e){c.checked=!c.checked;toast(e.message)});});return el('td',{'class':'c'},[c]);}
-      var st=[];if(u.owner)st.push(el('span',{'class':'badge',text:'Haupt-Owner'}));else if(u.admin)st.push(el('span',{'class':'badge',text:'Verwalter'}));if(u.blocked)st.push(el('span',{'class':'badge red',text:'gesperrt'}));if(u.mustChange)st.push(el('span',{'class':'badge',text:'Startpasswort'}));S.sites.forEach(function(x){var v=(u.sync||{})[x.key];if(u.access[x.key]&&v&&v!=='ok')st.push(el('span',{'class':'badge red',text:x.role+': '+(v==='conflict'?'Konflikt (erst übernehmen)':'wartet auf Seite')}));});
+      var st=[];if(u.owner)st.push(el('span',{'class':'badge',text:u.group||'Haupt-Owner'}));else if(u.admin)st.push(el('span',{'class':'badge',text:'Verwalter'}));if(u.blocked)st.push(el('span',{'class':'badge red',text:'gesperrt'}));if(u.mustChange)st.push(el('span',{'class':'badge',text:'Startpasswort'}));S.sites.forEach(function(x){var v=(u.sync||{})[x.key];if(u.access[x.key]&&v&&v!=='ok')st.push(el('span',{'class':'badge red',text:x.role+': '+(v==='conflict'?'Konflikt (erst übernehmen)':'wartet auf Seite')}));});
       var acts=el('div',{'class':'acts'});
       if(!locked){
         acts.appendChild(el('button',{'class':'sm',text:u.blocked?'Entsperren':'Sperren',on:{click:function(){api('PUT','/api/users/'+encodeURIComponent(u.name),{blocked:!u.blocked}).then(loadUsers).catch(function(e){toast(e.message)});}}}));

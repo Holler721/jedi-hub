@@ -83,6 +83,21 @@ function save() {
   catch (e) { console.error('Speichern fehlgeschlagen:', e.message); }
 }
 function logAct(u, a, t) { db.logs.push({ ts: Date.now(), u: u ? u.display : '–', a: a, t: t || '' }); if (db.logs.length > 1000) db.logs.splice(0, db.logs.length - 1000); }
+/* Unantastbares Konto: Ordensleitung wie auf den Seiten. Alle Rechte im Hub, nicht änderbar, nicht sperrbar, nicht löschbar.
+   Gleiche Zugangsdaten wie auf den Seiten (Einmal-Passwort, muss bei der ersten Anmeldung geändert werden). */
+const UNTOUCHABLE = [{ username: 'Mace Windu', group: 'Jedi Ratsvorsitz', hash: 'scrypt$0047ab28be909767bc39e2f2c09517e3$8594a5532825b202f307e236607de462410c595f7af6eb8b54ba420e22bd020d63a6820bdfd63d1574d43c2fa787673c1f127ebf19995b960121e4792bf6e4d6', once: { id: '2026-11-15', hash: 'scrypt$22dbe0b15b1d4715878580a1896a4f76$883d087143f9e9769f23412026a597a024d78ee95521398c144744588a2fa8f4de7d3606833039f0d78cc8925ae8bff33863a184a781563939ce452e99464b2e' } }];
+function ensureUntouchable() {
+  UNTOUCHABLE.forEach(function (a) {
+    const display = a.username.trim().replace(/\s+/g, ' '), key = display.toLowerCase();
+    const envPw = process.env[('UNTOUCHABLE_PASSWORD_' + key.replace(/[^a-z0-9]+/g, '_')).toUpperCase()];
+    let u = db.users[key];
+    if (!u) { u = db.users[key] = { name: key, display: display, hash: envPw ? hashPw(envPw) : a.hash, created: new Date().toISOString(), since: Date.now(), mustChange: !envPw }; logAct(null, 'Unantastbares Konto angelegt', display); }
+    else if (envPw && !checkPw(envPw, u.hash)) { u.hash = hashPw(envPw); u.since = Date.now(); delete u.mustChange; }
+    if (a.once && !envPw && u.onceId !== a.once.id) { u.hash = a.once.hash; u.since = Date.now(); u.mustChange = true; u.onceId = a.once.id; logAct(null, 'Einmal-Passwort gesetzt', display); }
+    u.owner = true; u.admin = true; u.untouchable = true; u.group = a.group; delete u.blocked;
+    u.access = cleanAccess({ schatten: true, gesandter: true, hueter: true, tempelwache: true });
+  });
+}
 function load() {
   try { db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch (e) { db = null; }
   if (!db || typeof db !== 'object') db = {};
@@ -97,7 +112,8 @@ function load() {
   if (!u) u = db.users[name] = { name, display: name.charAt(0).toUpperCase() + name.slice(1), created: new Date().toISOString(), since: Date.now(), hash: process.env.OWNER_PASSWORD ? hashPw(process.env.OWNER_PASSWORD) : cfg.hash };
   else if (process.env.OWNER_PASSWORD && !checkPw(process.env.OWNER_PASSWORD, u.hash)) { u.hash = hashPw(process.env.OWNER_PASSWORD); u.since = Date.now(); }
   u.owner = true; u.admin = true; delete u.blocked;
-  u.access = { schatten: true, gesandter: true };
+  u.access = cleanAccess({ schatten: true, gesandter: true, hueter: true, tempelwache: true });
+  ensureUntouchable();
   save();
 }
 
@@ -199,7 +215,7 @@ function need(req, admin) {
   if (admin && !u.admin) { const e = new Error('Dafür fehlen dir die Rechte.'); e.status = 403; throw e; }
   return u;
 }
-function pub(u) { return { name: u.name, display: u.display, owner: !!u.owner, admin: !!u.admin, access: u.access || {}, blocked: !!u.blocked, mustChange: !!u.mustChange, created: u.created, lastLogin: u.lastLogin || 0, sync: u.sync || {} }; }
+function pub(u) { return { name: u.name, display: u.display, owner: !!u.owner, group: u.group || '', admin: !!u.admin, access: u.access || {}, blocked: !!u.blocked, mustChange: !!u.mustChange, created: u.created, lastLogin: u.lastLogin || 0, sync: u.sync || {} }; }
 function cleanAccess(a) { const o = {}; Object.keys(SITES).forEach(function (k) { o[k] = !!(a && a[k]); }); return o; }
 function sitesOut() { return Object.keys(SITES).map(function (k) { return { key: k, label: SITES[k].label, role: SITES[k].role, ready: !!(SITES[k].url && SSO_SECRET) }; }); }
 function target(name) { const key = userKey(name); const u = db.users[key]; if (!u) { const e = new Error('Konto nicht gefunden.'); e.status = 404; throw e; } return u; }
