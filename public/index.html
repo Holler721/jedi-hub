@@ -170,7 +170,7 @@ function show(){
 }
 function renderTiles(){
   var t=$('tiles');t.textContent='';var any=false;
-  var desc={schatten:'Die Datenbank der Wachen.',gesandter:'Das Wissensarchiv des Jedi-Ordens.',hueter:'Bereich für die Hüter.',tempelwache:'Bereich für die Tempelwachen.'};
+  var desc={schatten:'Die Datenbank der Wachen.',gesandter:'Das Wissensarchiv des Jedi-Ordens.',hueter:'Bereich für die Hüter.',tempelwache:'Bereich für die Tempelwachen.',heiler:'Bereich für die Heiler.'};
   S.sites.forEach(function(s){
     var on=!!(S.user.access&&S.user.access[s.key]);any=any||on;
     var b=el('button',{'class':'pri',text:'Betreten'});

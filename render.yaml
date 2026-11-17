@@ -17,6 +17,8 @@ services:
         sync: false
       - key: TEMPELWACHE_URL
         sync: false
+      - key: HEILER_URL
+        sync: false
       - key: UPSTASH_REDIS_REST_URL
         sync: false
       - key: UPSTASH_REDIS_REST_TOKEN

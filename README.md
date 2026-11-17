@@ -1,6 +1,6 @@
 # Jedi Hub
 
-Zentrale Konten-Seite. Hier legt die Ordensleitung Konten an und weist ihnen **Wachen**, **Gesandter**, **Hüter** und/oder **Tempelwache** zu (beliebig kombinierbar):
+Zentrale Konten-Seite. Hier legt die Ordensleitung Konten an und weist ihnen **Wachen**, **Gesandter**, **Hüter**, **Tempelwache** und/oder **Heiler** zu (beliebig kombinierbar):
 
 | Zuweisung | Zugang zu | Rolle dort |
 |---|---|---|
@@ -8,8 +8,9 @@ Zentrale Konten-Seite. Hier legt die Ordensleitung Konten an und weist ihnen **W
 | Gesandter | Jedi Wissensarchiv | Gesandter (nur „Offen lesen“) |
 | Hüter | Hüter-Bereich (eigene Seite) | liegt bei der Seite |
 | Tempelwache | Tempelwachen-Bereich (eigene Seite) | liegt bei der Seite |
+| Heiler | Heiler-Bereich (eigene Seite) | liegt bei der Seite |
 
-Die Seiten für Hüter und Tempelwachen gibt es noch nicht. Bis ihre Adresse eingetragen ist, zeigt der Hub die Kachel als „Noch nicht verbunden“. Wie eine neue Seite angebunden wird: `SSO-ANBINDUNG.md`.
+Die Seiten für Hüter, Tempelwachen und Heiler gibt es noch nicht. Bis ihre Adresse eingetragen ist, zeigt der Hub die Kachel als „Noch nicht verbunden“. Wie eine neue Seite angebunden wird: `SSO-ANBINDUNG.md`.
 
 Wer sich im Hub anmeldet, sieht seine Zugänge und kommt mit „Betreten“ ohne zweites Passwort auf die Seite. Mehr Rechte vergibt die jeweilige Seite weiterhin selbst (Konten → Gruppe ändern); der Hub überschreibt sie bei späteren Anmeldungen nicht.
 
@@ -21,7 +22,7 @@ Node.js, keine Abhängigkeiten. Start: `node server.js`.
 3. Im **Hub** zusätzlich:
    - `SCHATTEN_URL` = Adresse der Wachen Datenbank, z. B. `https://meine-schatten.onrender.com`
    - `ARCHIV_URL` = Adresse des Jedi Wissensarchivs
-   - `HUETER_URL` und `TEMPELWACHE_URL` = Adressen der neuen Seiten, sobald sie existieren
+   - `HUETER_URL`, `TEMPELWACHE_URL` und `HEILER_URL` = Adressen der neuen Seiten, sobald sie existieren
    - optional `OWNER_PASSWORD`; sonst gilt das Passwort der bisherigen Seiten (gleiche `owner.json`).
 4. In **Wachen Datenbank und Jedi Wissensarchiv** zusätzlich (optional): `HUB_URL` = Adresse des Hubs (nur für den „Zurück zum Hub“-Link bei Fehlern).
 5. Dauerspeicher: wie bei den anderen Seiten Upstash Redis (`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`). Der Hub nutzt den eigenen Schlüssel `hub:db`, die gleiche Upstash-Datenbank kann also mitbenutzt werden. Ohne Upstash sind alle Hub-Konten nach einem Neustart weg.

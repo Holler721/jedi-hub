@@ -1,12 +1,12 @@
-# Eine neue Seite an den Hub anbinden (Hüter, Tempelwache)
+# Eine neue Seite an den Hub anbinden (Hüter, Tempelwache, Heiler)
 
-Der Hub schickt beim Klick auf „Betreten“ auf `HUETER_URL` bzw. `TEMPELWACHE_URL`:
+Der Hub schickt beim Klick auf „Betreten“ auf `HUETER_URL`, `TEMPELWACHE_URL` bzw. `HEILER_URL`:
 
     GET <Seiten-URL>/api/sso?t=<token>
 
 Das Token hat die Form `<body>.<signatur>` (beides base64url):
 
-- `body` = JSON `{ "u": "<kontoschlüssel>", "d": "<Anzeigename>", "aud": "hueter" | "tempelwache", "exp": <ms>, "jti": "<einmalige ID>" }`
+- `body` = JSON `{ "u": "<kontoschlüssel>", "d": "<Anzeigename>", "aud": "hueter" | "tempelwache" | "heiler", "exp": <ms>, "jti": "<einmalige ID>" }`
 - `signatur` = `HMAC-SHA256(HUB_SSO_SECRET, "sso." + body)`, base64url
 
 Die Seite muss prüfen: Signatur (zeitkonstant vergleichen), `aud` = die eigene Kennung, `exp` in der Zukunft (und höchstens ein paar Minuten), `jti` noch nie gesehen. Danach legt sie ein Konto für `d` an (ohne Passwort, als „Hub-Konto“ markiert) oder findet es, setzt ihre Sitzung und leitet auf `/` weiter. Lokale Konten mit gleichem Namen nie übernehmen.
@@ -15,7 +15,7 @@ Der Sitzungs-Cookie sollte `SameSite=Strict` bleiben; dann statt eines 302 eine 
 
 Entzug: Der Hub ruft `POST <Seiten-URL>/api/hub/revoke` mit JSON `{ "t": "<token>" }` auf. Das Token ist wie oben aufgebaut, aber mit `HMAC(…, "revoke." + body)`. Die Seite sperrt dann das Konto `d` sofort und beendet dessen Sitzungen. Header: `Content-Type: application/json`, `X-Requested-With: shadow-net`.
 
-Fertige Referenz: In `server.js` der Wachen Datenbank und des Jedi Wissensarchivs stehen `hubVerify`, `hubHandle` und `hubRevoke` (Abschnitt „Hub-Anbindung“). Sie lassen sich für eine neue Node-Seite fast 1:1 übernehmen; nur `HUB_AUD` auf `hueter` bzw. `tempelwache` setzen.
+Fertige Referenz: In `server.js` der Wachen Datenbank und des Jedi Wissensarchivs stehen `hubVerify`, `hubHandle` und `hubRevoke` (Abschnitt „Hub-Anbindung“). Sie lassen sich für eine neue Node-Seite fast 1:1 übernehmen; nur `HUB_AUD` auf `hueter`, `tempelwache` bzw. `heiler` setzen.
 
 Neue Zuweisungen oder andere Namen: im Hub `SITES` am Anfang von `server.js` ergänzen bzw. ändern (Schlüssel, `aud`, Beschriftung, Umgebungsvariable). Die Oberfläche passt sich automatisch an.
 

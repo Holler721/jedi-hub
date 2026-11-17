@@ -19,7 +19,8 @@ const SITES = {
   schatten: { aud: 'schatten', label: 'Wachen Datenbank', role: 'Wachen', url: (process.env.SCHATTEN_URL || '').replace(/\/+$/, '') },
   gesandter: { aud: 'archiv', label: 'Jedi Wissensarchiv', role: 'Gesandter', url: (process.env.ARCHIV_URL || '').replace(/\/+$/, '') },
   hueter: { aud: 'hueter', label: 'Hüter-Bereich', role: 'Hüter', url: (process.env.HUETER_URL || '').replace(/\/+$/, '') },
-  tempelwache: { aud: 'tempelwache', label: 'Tempelwachen-Bereich', role: 'Tempelwache', url: (process.env.TEMPELWACHE_URL || '').replace(/\/+$/, '') }
+  tempelwache: { aud: 'tempelwache', label: 'Tempelwachen-Bereich', role: 'Tempelwache', url: (process.env.TEMPELWACHE_URL || '').replace(/\/+$/, '') },
+  heiler: { aud: 'heiler', label: 'Heiler-Bereich', role: 'Heiler', url: (process.env.HEILER_URL || '').replace(/\/+$/, '') }
 };
 const RESERVED = ['owner', 'mace windu']; // gibt es auf den Seiten schon als lokale Konten
 let MAIN = '';
@@ -95,7 +96,7 @@ function ensureUntouchable() {
     else if (envPw && !checkPw(envPw, u.hash)) { u.hash = hashPw(envPw); u.since = Date.now(); delete u.mustChange; }
     if (a.once && !envPw && u.onceId !== a.once.id) { u.hash = a.once.hash; u.since = Date.now(); u.mustChange = true; u.onceId = a.once.id; logAct(null, 'Einmal-Passwort gesetzt', display); }
     u.owner = true; u.admin = true; u.untouchable = true; u.group = a.group; delete u.blocked;
-    u.access = cleanAccess({ schatten: true, gesandter: true, hueter: true, tempelwache: true });
+    u.access = cleanAccess({ schatten: true, gesandter: true, hueter: true, tempelwache: true, heiler: true });
   });
 }
 function load() {
@@ -112,7 +113,7 @@ function load() {
   if (!u) u = db.users[name] = { name, display: name.charAt(0).toUpperCase() + name.slice(1), created: new Date().toISOString(), since: Date.now(), hash: process.env.OWNER_PASSWORD ? hashPw(process.env.OWNER_PASSWORD) : cfg.hash };
   else if (process.env.OWNER_PASSWORD && !checkPw(process.env.OWNER_PASSWORD, u.hash)) { u.hash = hashPw(process.env.OWNER_PASSWORD); u.since = Date.now(); }
   u.owner = true; u.admin = true; delete u.blocked;
-  u.access = cleanAccess({ schatten: true, gesandter: true, hueter: true, tempelwache: true });
+  u.access = cleanAccess({ schatten: true, gesandter: true, hueter: true, tempelwache: true, heiler: true });
   ensureUntouchable();
   save();
 }
